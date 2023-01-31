@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.IO;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -382,6 +383,33 @@ namespace ConanSharpmake
                 foreach (var defines in dependency.Defines)
                 {
                     file.WriteLine($"      conf.Defines.Add(@\"{defines}\");");
+                }
+            }
+
+            if (dependency.BinPaths.Count() > 0)
+            {
+                // Windows only
+                string ext = "*.dll";
+                // if (Linux)
+                // {
+                //    ext = "*.so";
+                // }
+
+                bool createdComment = false;
+                file.WriteLine();
+                foreach (string binPath in dependency.BinPaths)
+                {
+                    if (!createdComment)
+                    {
+                        file.WriteLine(@"      // --- DLL Copies ---");
+                        createdComment = true;
+                    }
+
+                    string[] dllFiles = Directory.GetFiles(binPath, ext);
+                    foreach (string dllFile in dllFiles)
+                    {
+                        file.WriteLine($"      conf.TargetCopyFiles.Add(@\"{dllFile}\");");
+                    }
                 }
             }
 
