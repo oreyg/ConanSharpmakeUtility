@@ -1,0 +1,5 @@
+/.vs
+/obj
+/bin
+/ConanSharpmake.csproj.user
+Properties/launchSettings.json
